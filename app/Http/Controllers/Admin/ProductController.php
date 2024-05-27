@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    use ApiResponse;
-
     public function index()
     {
+        if (Gate::denies('read-product')){
+            return  $this->errorResponse('not permission user!', 403);
+        }
         $product = Product::paginate(10);
         return ProductResource::collection($product);
     }
